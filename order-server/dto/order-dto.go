@@ -8,6 +8,6 @@ type CreateOrder struct {
 }
 
 type OrderPayload struct {
-	OrderID uuid.UUID `json:"order_id"`
+	OrderID uuid.UUID `json:"orderId"`
 	PIN     string    `json:"pin"`
 }

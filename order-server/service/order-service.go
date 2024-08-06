@@ -36,7 +36,7 @@ func (service *orderService) callToPaymentService(orderId uuid.UUID) {
 		panic(err)
 	}
 
-	url := "http://localhost:8081/orders"
+	url := "http://localhost:8081/payments"
 
 	req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonData))
 	if err != nil {
