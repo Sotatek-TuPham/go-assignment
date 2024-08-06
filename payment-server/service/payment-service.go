@@ -1,9 +1,13 @@
 package service
 
 import (
+	"fmt"
 	"gin-server/config"
 	"gin-server/dto"
 	"gin-server/entity"
+	"io/ioutil"
+	"net/http"
+	"time"
 )
 
 type PaymentService interface {
@@ -21,6 +25,24 @@ func (service *paymentService) CreatePayment(orderParams dto.CreatePayment) dto.
 	payment.OrderID = orderParams.OrderId
 	payment.Status = "CREATED"
 	config.DB.Create(&payment)
+
+	if orderParams.PIN != "" {
+		time.AfterFunc(10*time.Second, func() {
+			resp, err := http.Get("http://localhost:8080/test")
+			if err != nil {
+				panic(err)
+			}
+			defer resp.Body.Close()
+
+			body, err := ioutil.ReadAll(resp.Body)
+			if err != nil {
+				panic(err)
+			}
+
+			fmt.Println(string(body))
+		})
+	}
+
 	return dto.PaymentResponse{
 		Message: "Payment Created",
 	}
