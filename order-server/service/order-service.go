@@ -3,6 +3,7 @@ package service
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"gin-server/config"
 	"gin-server/dto"
@@ -11,6 +12,7 @@ import (
 	"io/ioutil"
 	"math/rand"
 	"net/http"
+	"time"
 
 	"github.com/google/uuid"
 )
@@ -18,6 +20,7 @@ import (
 type OrderService interface {
 	CreateOrder(dto.CreateOrder) entity.Order
 	PaymentHook(dto.PaymentPayload) dto.OrderResponse
+	CancelOrder(string) (entity.Order, error)
 }
 
 type orderService struct{}
@@ -80,5 +83,34 @@ func (service *orderService) PaymentHook(paymentPayload dto.PaymentPayload) dto.
 	config.DB.Where("id = ?", paymentPayload.OrderID).First(&order)
 	order.Status = entity.Status(paymentPayload.Status)
 	config.DB.Save(&order)
+
+	if entity.Status(paymentPayload.Status) == entity.CONFIRMED {
+		time.AfterFunc(10*time.Second, func() {
+			var order entity.Order
+			config.DB.Where("id = ?", paymentPayload.OrderID).First(&order)
+
+			// Update the order status to DELIVERED if it is still CONFIRMED
+			if order.Status == entity.CONFIRMED {
+				order.Status = entity.Status(entity.DELIVERED)
+				config.DB.Save(&order)
+			}
+		})
+	}
 	return dto.OrderResponse{Message: "Order updated"}
+}
+
+func (service *orderService) CancelOrder(orderId string) (entity.Order, error) {
+	var order entity.Order
+	config.DB.Where("id = ?", orderId).First(&order)
+	if order.Status == entity.CREATED {
+		return order, errors.New("cannot update order in Created state")
+	}
+
+	if order.Status == entity.DELIVERED {
+		return order, errors.New("cannot update order in Delivered state")
+	}
+
+	order.Status = entity.Status(entity.CANCELLED)
+	config.DB.Save(&order)
+	return order, nil
 }

@@ -33,5 +33,7 @@ func main() {
 		ctx.JSON(200, orderController.PaymentHook(ctx))
 	})
 
+	server.PUT("/orders/:id/cancel", orderController.CancelOrder)
+
 	server.Run(os.Getenv("PORT"))
 }

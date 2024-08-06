@@ -1,6 +1,10 @@
 package dto
 
-import "github.com/google/uuid"
+import (
+	"gin-server/entity"
+
+	"github.com/google/uuid"
+)
 
 type CreateOrder struct {
 	Email    string `json:"email"`
@@ -19,4 +23,8 @@ type PaymentPayload struct {
 
 type OrderResponse struct {
 	Message string `json:"message"`
+}
+
+type UpdateOrderDTO struct {
+	Status entity.Status `json:"status"`
 }
