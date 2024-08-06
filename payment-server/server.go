@@ -25,8 +25,8 @@ func main() {
 		})
 	})
 
-	server.POST("/orders", func(ctx *gin.Context) {
-		ctx.JSON(200, orderController.CreateOrder(ctx))
+	server.POST("/payments", func(ctx *gin.Context) {
+		ctx.JSON(200, orderController.CreatePayment(ctx))
 	})
 
 	server.Run(os.Getenv("PORT"))

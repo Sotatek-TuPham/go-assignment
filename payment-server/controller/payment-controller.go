@@ -2,14 +2,13 @@ package controller
 
 import (
 	"gin-server/dto"
-	"gin-server/entity"
 	"gin-server/service"
 
 	"github.com/gin-gonic/gin"
 )
 
 type PaymentController interface {
-	CreateOrder(ctx *gin.Context) entity.Payment
+	CreatePayment(ctx *gin.Context) dto.PaymentResponse
 }
 
 type paymentController struct {
@@ -22,9 +21,9 @@ func NewPaymentController(service service.PaymentService) PaymentController {
 	}
 }
 
-func (controller *paymentController) CreateOrder(ctx *gin.Context) entity.Payment {
+func (controller *paymentController) CreatePayment(ctx *gin.Context) dto.PaymentResponse {
 	var orderParams dto.CreatePayment
 	ctx.BindJSON(&orderParams)
-	order := controller.service.CreateOrder(orderParams)
-	return order
+	response := controller.service.CreatePayment(orderParams)
+	return response
 }

@@ -9,5 +9,5 @@ type Payment struct {
 	gorm.Model
 	ID      uuid.UUID `gorm:"type:uuid;default:uuid_generate_v4()" json:"id"`
 	OrderID string    `json:"orderId"`
-	Status  int64     `json:"status"`
+	Status  string    `json:"status"`
 }
