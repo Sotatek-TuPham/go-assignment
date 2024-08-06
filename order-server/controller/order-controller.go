@@ -10,6 +10,7 @@ import (
 
 type OrderController interface {
 	CreateOrder(ctx *gin.Context) entity.Order
+	PaymentHook(ctx *gin.Context) dto.OrderResponse
 }
 
 type orderController struct {
@@ -27,4 +28,11 @@ func (controller *orderController) CreateOrder(ctx *gin.Context) entity.Order {
 	ctx.BindJSON(&orderParams)
 	order := controller.service.CreateOrder(orderParams)
 	return order
+}
+
+func (controller *orderController) PaymentHook(ctx *gin.Context) dto.OrderResponse {
+	var paymentPayload dto.PaymentPayload
+	ctx.BindJSON(&paymentPayload)
+	response := controller.service.PaymentHook(paymentPayload)
+	return response
 }

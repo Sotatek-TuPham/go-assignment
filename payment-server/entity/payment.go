@@ -8,6 +8,6 @@ import (
 type Payment struct {
 	gorm.Model
 	ID      uuid.UUID `gorm:"type:uuid;default:uuid_generate_v4()" json:"id"`
-	OrderID string    `json:"orderId"`
+	OrderID uuid.UUID `json:"orderId"`
 	Status  string    `json:"status"`
 }

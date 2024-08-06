@@ -1,10 +1,13 @@
 package service
 
 import (
+	"bytes"
+	"encoding/json"
 	"fmt"
 	"gin-server/config"
 	"gin-server/dto"
 	"gin-server/entity"
+	"gin-server/util"
 	"io/ioutil"
 	"net/http"
 	"time"
@@ -28,7 +31,26 @@ func (service *paymentService) CreatePayment(orderParams dto.CreatePayment) dto.
 
 	if orderParams.PIN != "" {
 		time.AfterFunc(10*time.Second, func() {
-			resp, err := http.Get("http://localhost:8080/test")
+			payload := dto.PaymentPayload{
+				OrderID: orderParams.OrderId,
+				Status:  util.RandomPaymentStatus(),
+			}
+
+			jsonData, err := json.Marshal(payload)
+			if err != nil {
+				panic(err)
+			}
+
+			url := "http://localhost:8080/orders/payment-hook"
+
+			req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonData))
+			if err != nil {
+				panic(err)
+			}
+			req.Header.Set("Content-Type", "application/json")
+
+			client := &http.Client{}
+			resp, err := client.Do(req)
 			if err != nil {
 				panic(err)
 			}

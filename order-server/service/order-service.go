@@ -17,6 +17,7 @@ import (
 
 type OrderService interface {
 	CreateOrder(dto.CreateOrder) entity.Order
+	PaymentHook(dto.PaymentPayload) dto.OrderResponse
 }
 
 type orderService struct{}
@@ -72,4 +73,12 @@ func (service *orderService) CreateOrder(orderParams dto.CreateOrder) entity.Ord
 	service.callToPaymentService(order.ID)
 
 	return order
+}
+
+func (service *orderService) PaymentHook(paymentPayload dto.PaymentPayload) dto.OrderResponse {
+	var order entity.Order
+	config.DB.Where("id = ?", paymentPayload.OrderID).First(&order)
+	order.Status = entity.Status(paymentPayload.Status)
+	config.DB.Save(&order)
+	return dto.OrderResponse{Message: "Order updated"}
 }

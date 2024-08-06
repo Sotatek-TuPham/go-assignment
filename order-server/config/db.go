@@ -23,7 +23,7 @@ func Connect() {
 	// Check if the enum type exists and create it if it doesn't
 	createEnumType(db)
 
-	db.AutoMigrate(&entity.Video{}, &entity.Order{})
+	db.AutoMigrate(&entity.Order{})
 	DB = db
 }
 
